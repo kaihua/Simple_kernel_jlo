@@ -1,0 +1,25 @@
+#
+# Vibrator device configuration
+#
+
+menu "Vibrator device support"
+
+config FIH_VIBRATOR_CLASS
+	bool "FIH vibrator class driver"
+	help
+	  FIH vibrator class driver.
+
+if FIH_VIBRATOR_CLASS
+
+comment "Vibrator Device Drivers"
+
+config FIH_VIBRATOR
+	tristate "FIH vibrator driver"
+	depends on FIH_VIBRATOR_CLASS
+	help
+	  support Qualcomm pmic vibrator.
+
+endif
+
+endmenu
+

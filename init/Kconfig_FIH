@@ -1,0 +1,1252 @@
+menuconfig FIH_CONFIG_GROUP
+    bool "FIH Configurations Group"
+    default y
+    help
+        Turn on this group to enable FIH's configurations menu
+
+if FIH_CONFIG_GROUP
+    comment "FIH Project Flags for FIH_CONFIG_GROUP"
+
+    choice
+        prompt "Select a project name"
+        default FIH_PROJECT_TAP
+
+        config FIH_PROJECT_TAP
+            bool "01. FIH_PROJECT_TAP"
+            help
+                Enable the support for FIH_PROJECT_TAP flag
+        config FIH_PROJECT_MES
+            bool "02. FIH_PROJECT_MES"
+            help
+                Enable the support for FIH_PROJECT_MES flag
+
+        config FIH_PROJECT_JLO
+            bool "03. FIH_PROJECT_JLO"
+            help
+                Enable the support for FIH_PROJECT_JLO flag
+    endchoice
+
+    # --- FIH_PROJECT_TAP{-------------------------------------------------- START
+    # ***********************************************************    
+    # Project configurations for FIH_PROJECT_TAP
+    # ***********************************************************
+    menu "Configurations for FIH_PROJECT_TAP"
+        depends on FIH_PROJECT_TAP
+        config FIH_FTM
+            bool "FIH_FTM"
+            default n
+            help
+                Enable/Disable the build flag FIH_FTM.
+
+        config FIH_MACH_TAMSUI_TAP
+            bool "FIH_MACH_TAMSUI_TAP"
+            depends on FIH_PROJECT_TAP
+            default y
+            help
+                Enable/Disable the build flag FIH_MACH_TAMSUI_TAP.
+
+        config FIH_SEMC_S1
+            bool "FIH_SEMC_S1"
+            depends on FIH_PROJECT_TAP
+            default n
+            help
+                Enable/Disable SEMC S1 boot for TAP.
+                
+        menuconfig FIH_TOUCHSCREEN
+            bool "FIH TouchScreen"
+            depends on FIH_CONFIG_GROUP
+            default y
+            help
+                Select if the touch panel is attached.
+
+        if FIH_TOUCHSCREEN
+        menuconfig FIH_TOUCHSCREEN_SYNAPTICS_T1320
+            bool "Synaptics T1320 Touchscreen"
+            depends on I2C && FIH_TOUCHSCREEN
+            default n
+            help
+                Select if the Synaptics T1320 touch panel is attached.
+
+        if FIH_TOUCHSCREEN_SYNAPTICS_T1320
+        config FIH_TOUCHSCREEN_SYNAPTICS_T1320_UPGRADE
+            bool "Synaptics T1320 Touchscreen Upgrade Enable"
+            depends on I2C && FIH_TOUCHSCREEN_SYNAPTICS_T1320
+            default n
+            help
+                Select if the Synaptics T1320 touch panel upgrade FW needed.
+
+        config FIH_TOUCHSCREEN_SYNAPTICS_T1320_AUTOUPGRADE
+            bool "Synaptics T1320 Touchscreen AUTO-upgrade Enable"
+            depends on I2C && FIH_TOUCHSCREEN_SYNAPTICS_T1320_UPGRADE
+            default n
+            help
+                Select if the Synaptics T1320 touch panel AUTO upgrade FW needed.
+        endif
+        endif
+        
+        # FIH-SW3-PERIPHERAL-AH-Touch_Porting-00
+        if FIH_TOUCHSCREEN
+        config FIH_TOUCHSCREEN_CYTTSP_I2C_TMA340
+            bool "Cypress TTSP based touchscreens TMA340"
+            depends on I2C && FIH_TOUCHSCREEN
+            default y
+            help
+                Select if the Cypress TMA340 touch panel is attached.
+        endif
+
+        #FIH-SW3-KERNEL-VH-CHARGING-11*[
+        config FIH_SW3_BATTERY
+            bool "FIH battery driver"
+            default y
+            help
+                Enable FIH battery driver
+        config FIH_SW3_BQ275X0_ROMMODE
+            bool "Enable BQ275x0 programming driver"
+            depends on FIH_SW3_BATTERY
+            default y
+            help
+                  Enable bq275x0 programming driver.
+              
+        config FIH_SW3_BQ275X0_ROMMODE_AUTO_UPGRADE
+            bool "Enable DFI/FW auto upgrade"
+            depends on FIH_SW3_BQ275X0_ROMMODE
+            default y
+            help
+                  Enable auto upgrade while driver probe.
+        
+        config FIH_SW3_POWER_OFF_CHARGING
+            bool "Enable power off charging mode"
+            depends on FIH_SW3_BATTERY
+            default y
+            help
+                Enable power off charging mode.
+        #FIH-SW3-KERNEL-VH-CHARGING-21*[
+        config FIH_SW1_FEATURE_BATTERY_THERMAL_VIA_PMIC
+            bool "Enable get battery thermal from PMIC. "
+            depends on FIH_SW3_BATTERY
+            default n
+            help
+                Enable the patch which get battery temperature from PMIC.
+        #FIH-SW3-KERNEL-VH-CHARGING-21*]
+        #FIH-SW3-KERNEL-VH-CHARGING-11*]
+        
+        #FIH-KERNEL-SC-Suspend_Hang_Timer-00+[
+        config FIH_SUSPEND_HANG_TIMER
+            bool "FIH SUSPEND HANG TIMER"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable to dump suspend information while suspend hang.
+        #FIH-KERNEL-SC-Suspend_Hang_Timer-00+]
+    
+        #FIH-KERNEL-SC-sleep-func-00+[
+        config FIH_HR_MSLEEP
+            bool "FIH_HR_MSLEEP"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Provide more efficient sleep function.
+        #FIH-KERNEL-SC-sleep-func-00+]
+        
+        
+        # FIH-SW3-KERNEL-EL-add_last_alog-00+[
+        config FEATURE_FIH_SW3_LAST_ALOG
+            bool "RAM console for last alog"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable RAM console for last alog
+
+        # FIH-SW3-KERNEL-EL-add_flag_for_battery_power_on_reason+[
+        config FIH_SW3_POWER_ON_REASON
+            bool "turn on the power on reason detection for battery driver"
+            default n
+            help
+                turn on the power on reason detection for battery driver
+        # FIH-SW3-KERNEL-EL-add_flag_for_battery_power_on_reason+]
+        # FIH-SW3-KERNEL-EL-add_last_alog-00+]
+
+        # FIH-SW3-KERNEL-EL-dynamically_disable_UART-00+[
+
+        config FEATURE_FIH_SW3_BUILDTYPE_DEBUG
+            bool "enable debug mode for printk"
+            default n
+            help
+                if build debug, printk will not lost log when resume
+
+        config FEATURE_FIH_SW3_REMOVE_SERIAL_DYNAMICALLY
+            bool "turn off serial port dynamically"
+            default n
+            help
+                turn off serial port dynamically
+        # FIH-SW3-KERNEL-EL-dynamically_disable_UART-00+]
+
+        # FIH-SW2-PERIPHERAL-FG-SENSOR-00*[
+        config FIH_SENSOR
+            bool "FIH Sensors"
+            depends on FIH_CONFIG_GROUP
+            default y
+            help
+                Say Y here if you want to support FIH senosrs.
+
+        config FIH_MSENSOR_AKM8975
+            bool "Magnetic Field Sensor: AK8975B"
+            depends on I2C && FIH_SENSOR
+            default n
+            help
+                Say Y here if you want to support Asahi Kasei's
+                magnetic/orientation sensor AK8975.
+
+        config FIH_ASENSOR_BMA250
+            bool "Acceleration Sensor: BMA250"
+            depends on I2C && FIH_SENSOR
+            default y
+            help
+                Say Y here if you want to support Bosch Sensortec's
+                acceleration sensor BMA250.
+
+        config FIH_PSENSOR_QPDSS702
+            bool "Proximity Sensor: QPDS-S702"
+            depends on I2C && FIH_SENSOR
+            default y
+            help
+                Say Y here if you want to support AVAGO's
+                proximity sensor QPDS-S702.
+
+        # FIH-SW1-PERIPHERAL-AC-PSENSOR_SENSITIVITY-01+[
+        config PROXIMITY_SENSOR_CALIBRATON_REPLACE
+            bool "Proximity Sensor calibration replace"
+            depends on FIH_PSENSOR_QPDSS702
+            default n
+            help
+                Support for proximity sensor calibration data replace from nv
+        # FIH-SW1-PERIPHERAL-AC-PSENSOR_SENSITIVITY-01+]
+        # FIH-SW2-PERIPHERAL-FG-SENSOR-00*]
+
+        config FIH_BRIGHTNESS
+            bool "Support camera brightness setting"
+            default y
+            help
+                Enable camera brightness setting.     
+                 
+        config FIH_WB
+            bool "Support camera white balance setting"
+            default y
+            help
+                Enable camera white balance setting.
+
+        config FIH_METRY
+            bool "Support camera AE metry setting"
+            default y
+            help
+                Enable camera AE metry setting.     
+                 
+        config FIH_SCENE
+            bool "Support camera scene mode setting"
+            default y
+            help
+                Enable camera scene mode setting.
+        # /*SW2D2-MM-MC-Camera-EnableZoomWhileVideoRecording-01+{ */
+        config FIH_ZOOM_FOR_RECORDING
+            bool "Support camera zoom in/out when recording"
+            default n
+            help
+                Enable camera zoom in/out when recording.  
+        # /*SW2D2-MM-MC-Camera-EnableZoomWhileVideoRecording-01+{ */
+    
+        # /*FIH-SW3-KERNEL-JC-Porting-01+[ */
+        config FIH_SUSPEND_RESUME_LOG
+            bool "FIH LOG about SUSPEND/RESUME"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable suspend and resume log support
+        
+        config FIH_MODEM_SUSPEND_LOG
+            bool "FIH MODEM SUSPEND LOG"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable to show the suspend log at modem of last suspend event.
+
+        config FIH_DUMP_WAKELOCK
+            bool "FIH DUMP WAKELOCK"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable to dump wakelock if it active.  
+        
+        config FIH_DISABLE_SUSPEND
+            bool "FIH DISABLE SUSPEND"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Disable suspend by wakelock.           
+        # /*FIH-SW3-KERNEL-JC-Porting-01+] */ 
+
+        # FIH-SW1-KERNEL-HC-Modem_Crash_Log-00+[
+        config FIH_MODEM_CRASH_LOG
+            bool "FIH MODEM CRASH LOG"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable modem crash log if it active. 
+        # FIH-SW1-KERNEL-HC-Modem_Crash_Log-00+]
+        
+        # FIH-SW3-KERNEL-PK-INPUT_SAMPLING_DOWN_FACTOR-00+[
+        config FIH_INCREASE_CPU_FREQ_WHEN_INPUT_EVENT
+            bool "FIH INCREASE CPU FREQ WHEN INPUT EVENT"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable this feauture to adjust cpufreq settings.
+        # FIH-SW3-KERNEL-PK-INPUT_SAMPLING_DOWN_FACTOR-00+]          
+
+        # MTD-Conn-JC-BTSleep-00+[
+        config BROADCOM_BCM4330_BTFM
+            tristate "Broadcom BCM4330 is used"
+            default y
+            depends on FIH_CONFIG_GROUP
+            help
+                If you say yes here you get support for broadcom BCM4330.
+
+        config BROADCOM_BCM4330_BTFM_SLEEP
+            tristate "Enable Broadcom BCM4330 Sleep mode"
+            default y
+            depends on FIH_CONFIG_GROUP && BROADCOM_BCM4330_BTFM
+            help
+                If you say yes here you get support for broadcom BCM4330 Sleep mode.
+        # MTD-Conn-JC-BTSleep-00+] 
+
+        # FIH-SW3-CONN-MW-USB_Charging-00+[
+        config FIH_USB_CHARGING_WHEN_CONNECT_TO_PC_WHICH_UNDER_STANDBY_MODE
+            bool "USB CHARGING WHEN CONNECT TO PC WHICH UNDER STANDBY MODE"
+            default y
+            help
+                Select if you want CHARGING_WHEN_CONNECT_TO_PC_WHICH_UNDER_STANDBY_MODE.
+        # FIH-SW3-CONN-MW-USB_Charging-00+]
+        # FIH-SW-MM-VH-DISPLAY-21*[
+        config FIH_SW_DISPLAY
+            bool "FIH display driver"
+            default n
+            help
+                FIH display driver.
+        config FIH_FB_MSM_POWER_OFF_CHARGING_ANIMATION
+            depends on FIH_SW_DISPLAY
+            bool "Support for power off charging animation"
+            default n
+            help
+	            Enable show power off charging pictures.
+        config FIH_SW_TCXO_SD_DURING_DISPLAY_ON
+            depends on FIH_SW_DISPLAY
+            bool "Make SOC TCXO shutdown while screen on"
+            default n
+            help
+                Make SOC TCXO shutdown while screen on.
+        config FIH_SW_DISPLAY_BACKLIGHT_CMD_QUEUE
+            depends on FIH_SW_DISPLAY
+            bool "Enable backlight command queue"
+            default n
+            help
+                Queuing backlight commands before pan display, and send after pan display.
+        config FIH_SW_DISPLAY_CABC
+            depends on FIH_SW_DISPLAY
+            bool "Enable CABC"
+            default n
+            help
+                Enable content adaptive backlight control of display.
+        config FIH_SW_DISPLAY_CABC_TOOLBOX
+            depends on FIH_SW_DISPLAY_CABC
+            bool "Enable CABC TOOLBOX"
+            default n
+            help
+                Enable CABC toolbox
+#FIH-SW-MM-VH-DISPLAY-40*[
+        config FIH_SW_DISPLAY_CMI_LCM_HEALTHY_CHECK
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_MES
+            bool "Enable CMI LCM healthy check"
+            default n
+            help
+                Enable MIPI healthy check, retry initial sequence once panel crashed.
+        config FIH_SW_DISPLAY_LCM_ID_CHECK
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_TAP
+            bool "Enable LCM id check"
+            default n
+            help
+                Enable LCM id check.
+        config FIH_SW_DISPLAY_AUO_LCM_HEALTHY_CHECK
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_MES
+            bool "Enable AUO LCM healthy check"
+            default n
+            help
+                Enable AUO LCM healthy check.
+#FIH-SW-MM-VH-DISPLAY-40*]
+        config FIH_SW_FWVGA_LOGO
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_JLO
+            bool "Sony FWVGA Logo"
+            default n
+            help
+                Select FWVGA Logo.
+        config FIH_SW_DISPLAY_DSI_BKL_EN
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_JLO
+            bool "DSI_BKL_EN"
+            default n
+            help
+                DSI_BKL_EN
+        config FIH_FB_MSM_DISPLAY_WORK_QUEUE
+            depends on FIH_SW_DISPLAY
+            bool "Enable Display Work Queue"
+            default n
+            help
+                Use work queue to decrease display resume time.
+        config FIH_SW_DISPLAY_LCM_DIMMING
+            depends on FIH_SW_DISPLAY
+            bool "Enable LCM DIMMING by set DD"
+            default n
+            help
+                Set DD of 0x53
+# FIH-SW-MM-VH-DISPLAY-21*]
+    endmenu
+    # --- FIH_PROJECT_TAP}-------------------------------------------------- END
+
+    # --- FIH_PROJECT_MES{-------------------------------------------------- START
+    # ***********************************************************    
+    # Project configurations for FIH_PROJECT_MES
+    # ***********************************************************
+    menu "Configurations for FIH_PROJECT_MES"
+        depends on FIH_PROJECT_MES
+        config FIH_FTM
+            bool "FIH_FTM"
+            default n
+            help
+                Enable/Disable the build flag FIH_FTM.
+
+        config FIH_MACH_TAMSUI_MES
+            bool "FIH_MACH_TAMSUI_MES"
+            depends on FIH_PROJECT_MES
+            default y
+            help
+                Enable/Disable the build flag FIH_MACH_TAMSUI_MES.
+
+        config FIH_SEMC_S1
+            bool "FIH_SEMC_S1"
+            depends on FIH_PROJECT_MES
+            default n
+            help
+                Enable/Disable SEMC S1 boot for MES.
+
+        menuconfig FIH_TOUCHSCREEN
+            bool "FIH TouchScreen"
+            depends on FIH_CONFIG_GROUP
+            default y
+            help
+                Select if the touch panel is attached.
+
+        if FIH_TOUCHSCREEN
+        menuconfig FIH_TOUCHSCREEN_SYNAPTICS_T1320
+            bool "Synaptics T1320 Touchscreen"
+            depends on I2C && FIH_TOUCHSCREEN
+            default n
+            help
+                Select if the Synaptics T1320 touch panel is attached.
+
+        if FIH_TOUCHSCREEN_SYNAPTICS_T1320
+        config FIH_TOUCHSCREEN_SYNAPTICS_T1320_UPGRADE
+            bool "Synaptics T1320 Touchscreen Upgrade Enable"
+            depends on I2C && FIH_TOUCHSCREEN_SYNAPTICS_T1320
+            default n
+            help
+                Select if the Synaptics T1320 touch panel upgrade FW needed.
+
+        config FIH_TOUCHSCREEN_SYNAPTICS_T1320_AUTOUPGRADE
+            bool "Synaptics T1320 Touchscreen AUTO-upgrade Enable"
+            depends on I2C && FIH_TOUCHSCREEN_SYNAPTICS_T1320_UPGRADE
+            default n
+            help
+                Select if the Synaptics T1320 touch panel AUTO upgrade FW needed.
+
+        endif
+        endif
+        
+        # FIH-SW3-PERIPHERAL-AH-Touch_Porting-00
+        if FIH_TOUCHSCREEN
+        menuconfig FIH_TOUCHSCREEN_CYTTSP_I2C_TMA340
+            bool "Cypress TTSP based touchscreens TMA340"
+            depends on I2C && FIH_TOUCHSCREEN
+            default y
+            help
+                Select if the Cypress TMA340 touch panel is attached.
+		
+		if FIH_TOUCHSCREEN_CYTTSP_I2C_TMA340
+        config FIH_TOUCHSCREEN_CYTTSP_I2C_TMA340_ESD
+            bool "Cypress TMA340 Touchscreen ESD workaround"
+            depends on I2C && FIH_TOUCHSCREEN_CYTTSP_I2C_TMA340
+            default y
+            help
+                Select if the Cypress TMA340 Touchscreen ESD workaround needed.
+
+		endif
+        endif
+
+
+        #FIH-SW3-KERNEL-VH-CHARGING-11*[
+        config FIH_SW3_BATTERY
+            bool "FIH battery driver"
+            default y
+            help
+                Enable FIH battery driver
+        config FIH_SW3_BQ275X0_ROMMODE
+            bool "Enable BQ275x0 programming driver"
+            depends on FIH_SW3_BATTERY
+            default y
+            help
+                  Enable bq275x0 programming driver.
+              
+        config FIH_SW3_BQ275X0_ROMMODE_AUTO_UPGRADE
+            bool "Enable DFI/FW auto upgrade"
+            depends on FIH_SW3_BQ275X0_ROMMODE
+            default y
+            help
+                  Enable auto upgrade while driver probe.
+        
+        config FIH_SW3_POWER_OFF_CHARGING
+            bool "Enable power off charging mode"
+            depends on FIH_SW3_BATTERY
+            default y
+            help
+                Enable power off charging mode.
+        #FIH-SW3-KERNEL-VH-CHARGING-21*[
+        config FIH_SW1_FEATURE_BATTERY_THERMAL_VIA_PMIC
+            bool "Enable get battery thermal from PMIC. "
+            depends on FIH_SW3_BATTERY
+            default n
+            help
+                Enable the patch which get battery temperature from PMIC.
+        #FIH-SW3-KERNEL-VH-CHARGING-21*]
+        #FIH-SW3-KERNEL-VH-CHARGING-11*]
+        
+        
+        # FIH-SW3-KERNEL-EL-add_last_alog-00+[
+        config FEATURE_FIH_SW3_LAST_ALOG
+            bool "RAM console for last alog"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable RAM console for last alog
+        # FIH-SW3-KERNEL-EL-add_flag_for_battery_power_on_reason+[
+        config FIH_SW3_POWER_ON_REASON
+            bool "turn on the power on reason detection for battery driver"
+            default n
+            help
+                turn on the power on reason detection for battery driver
+        # FIH-SW3-KERNEL-EL-add_flag_for_battery_power_on_reason+]  
+        # FIH-SW3-KERNEL-EL-add_last_alog-00+]
+        # FIH-SW3-KERNEL-EL-dynamically_disable_UART-00+[
+
+        config FEATURE_FIH_SW3_BUILDTYPE_DEBUG
+            bool "enable debug mode for printk"
+            default n
+            help
+                if build debug, printk will not lost log when resume
+
+        config FEATURE_FIH_SW3_REMOVE_SERIAL_DYNAMICALLY
+            bool "turn off serial port dynamically"
+            default n
+            help
+                turn off serial port dynamically
+
+        # FIH-SW3-KERNEL-EL-dynamically_disable_UART-00+]
+
+        # FIH-SW2-PERIPHERAL-FG-SENSOR-00*[
+        config FIH_SENSOR
+            bool "FIH Sensors"
+            depends on FIH_CONFIG_GROUP
+            default y
+            help
+                Say Y here if you want to support FIH senosrs.
+
+        config FIH_MSENSOR_AKM8975
+            bool "Magnetic Field Sensor: AK8975B"
+            depends on I2C && FIH_SENSOR
+            default y
+            help
+                Say Y here if you want to support Asahi Kasei's
+                magnetic/orientation sensor AK8975.
+
+        config FIH_ASENSOR_BMA250
+            bool "Acceleration Sensor: BMA250"
+            depends on I2C && FIH_SENSOR
+            default y
+            help
+                Say Y here if you want to support Bosch Sensortec's
+                acceleration sensor BMA250.
+
+        config FIH_PSENSOR_QPDSS702
+            bool "Proximity Sensor: QPDS-S702"
+            depends on I2C && FIH_SENSOR
+            default y
+            help
+                Say Y here if you want to support AVAGO's
+                proximity sensor QPDS-S702.
+
+        # FIH-SW1-PERIPHERAL-AC-PSENSOR_SENSITIVITY-01+[
+        config PROXIMITY_SENSOR_CALIBRATON_REPLACE
+            bool "Proximity Sensor calibration replace"
+            depends on FIH_PSENSOR_QPDSS702
+            default n
+            help
+                Support for proximity sensor calibration data replace from nv
+        # FIH-SW1-PERIPHERAL-AC-PSENSOR_SENSITIVITY-01+]
+        # FIH-SW2-PERIPHERAL-FG-SENSOR-00*]
+
+        #SW2D2-MM-MC-Camera-BringUpL03561LedDriverIC-00+[
+        config FIH_CAMERA
+            bool "Enable Camera for FIH project"
+            depends on MSM_CAMERA
+            default y
+            ---help---
+              Enable Camera for FIH project
+              
+        config ISX006
+            bool "Sensor isx006 (SOC 5M)"
+            depends on FIH_CAMERA 
+            default n
+            ---help---
+              Sony 5M SOC Sensor 
+              
+        config CAMERA_FLASH_LM3561
+            bool "Lm3561 flash driver IC of LED"
+            depends on FIH_CAMERA && ISX006
+            default n
+            ---help---
+              Led flash driver IC for Camera             
+        #SW2D2-MM-MC-Camera-BringUpL03561LedDriverIC-00+]          
+        #SW2D2-MM-MC-Camera-BringUpMt9v115Sensor-00+[
+        config MT9V115
+            bool "Sensor mt9v115 (SOC VGA)"
+            depends on FIH_CAMERA 
+            default n
+            ---help---
+              Aptina VGA SOC Sensor 
+        #SW2D2-MM-MC-Camera-BringUpMt9v115Sensor-00+]
+
+        config FIH_BRIGHTNESS
+            bool "Support camera brightness setting"
+            default y
+            help
+                Enable camera brightness setting.     
+                 
+        config FIH_WB
+            bool "Support camera white balance setting"
+            default y
+            help
+                Enable camera white balance setting.                     
+        config FIH_METRY
+            bool "Support camera AE metry setting"
+            default y
+            help
+                Enable camera AE metry setting.     
+                           
+        config FIH_SCENE
+            bool "Support camera scene mode setting"
+            default y
+            help
+                Enable camera scene mode setting.
+    
+        # /*FIH-SW3-KERNEL-JC-Porting-01+[ */
+        config FIH_SUSPEND_RESUME_LOG
+            bool "FIH LOG about SUSPEND/RESUME"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable suspend and resume log support
+        
+        config FIH_MODEM_SUSPEND_LOG
+            bool "FIH MODEM SUSPEND LOG"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable to show the suspend log at modem of last suspend event.
+
+        config FIH_DUMP_WAKELOCK
+            bool "FIH DUMP WAKELOCK"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable to dump wakelock if it active.  
+        
+        config FIH_DISABLE_SUSPEND
+            bool "FIH DISABLE SUSPEND"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Disable suspend by wakelock.
+        # /*FIH-SW3-KERNEL-JC-Porting-01+] */ 
+
+        #FIH-KERNEL-SC-Suspend_Hang_Timer-00+[
+        config FIH_SUSPEND_HANG_TIMER
+            bool "FIH SUSPEND HANG TIMER"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable to dump suspend information while suspend hang.
+        #FIH-KERNEL-SC-Suspend_Hang_Timer-00+]
+    
+        #FIH-KERNEL-SC-sleep-func-00+[
+        config FIH_HR_MSLEEP
+            bool "FIH_HR_MSLEEP"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Provide more efficient sleep function.
+        #FIH-KERNEL-SC-sleep-func-00+]
+
+        # FIH-SW1-KERNEL-HC-Modem_Crash_Log-00+[
+        config FIH_MODEM_CRASH_LOG
+            bool "FIH MODEM CRASH LOG"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable modem crash log if it active. 
+        # FIH-SW1-KERNEL-HC-Modem_Crash_Log-00+]
+
+        # FIH-SW3-KERNEL-PK-INPUT_SAMPLING_DOWN_FACTOR-00+[
+        config FIH_INCREASE_CPU_FREQ_WHEN_INPUT_EVENT
+            bool "FIH INCREASE CPU FREQ WHEN INPUT EVENT"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable this feauture to adjust cpufreq settings.
+        # FIH-SW3-KERNEL-PK-INPUT_SAMPLING_DOWN_FACTOR-00+]  
+        
+        # MTD-Conn-JC-BTSleep-00+[
+        config BROADCOM_BCM4330_BTFM
+            tristate "Broadcom BCM4330 is used"
+            default y
+            depends on FIH_CONFIG_GROUP
+            help
+                If you say yes here you get support for broadcom BCM4330.
+
+        config BROADCOM_BCM4330_BTFM_SLEEP
+            tristate "Enable Broadcom BCM4330 Sleep mode"
+            default y
+            depends on FIH_CONFIG_GROUP && BROADCOM_BCM4330_BTFM
+            help
+                If you say yes here you get support for broadcom BCM4330 Sleep mode.
+        # MTD-Conn-JC-BTSleep-00+] 
+
+        # FIH-SW3-CONN-MW-USB_Charging-00+[
+        config FIH_USB_CHARGING_WHEN_CONNECT_TO_PC_WHICH_UNDER_STANDBY_MODE
+            bool "USB CHARGING WHEN CONNECT TO PC WHICH UNDER STANDBY MODE"
+            default y
+            help
+                Select if you want CHARGING_WHEN_CONNECT_TO_PC_WHICH_UNDER_STANDBY_MODE.
+        # FIH-SW3-CONN-MW-USB_Charging-00+]
+        # FIH-SW-MM-VH-DISPLAY-21*[
+        config FIH_SW_DISPLAY
+            bool "FIH display driver"
+            default n
+            help
+                FIH display driver.
+        config FIH_FB_MSM_POWER_OFF_CHARGING_ANIMATION
+            depends on FIH_SW_DISPLAY
+            bool "Support for power off charging animation"
+            default n
+            help
+	            Enable show power off charging pictures.
+        config FIH_SW_TCXO_SD_DURING_DISPLAY_ON
+            depends on FIH_SW_DISPLAY
+            bool "Make SOC TCXO shutdown while screen on"
+            default n
+            help
+                Make SOC TCXO shutdown while screen on.
+        config FIH_SW_DISPLAY_BACKLIGHT_CMD_QUEUE
+            depends on FIH_SW_DISPLAY
+            bool "Enable backlight command queue"
+            default n
+            help
+                Queuing backlight commands before pan display, and send after pan display.
+        config FIH_SW_DISPLAY_CABC
+            depends on FIH_SW_DISPLAY
+            bool "Enable CABC"
+            default n
+            help
+                Enable content adaptive backlight control of display.
+        config FIH_SW_DISPLAY_CABC_TOOLBOX
+            depends on FIH_SW_DISPLAY_CABC
+            bool "Enable CABC TOOLBOX"
+            default n
+            help
+                Enable CABC toolbox
+#FIH-SW-MM-VH-DISPLAY-40*[
+        config FIH_SW_DISPLAY_CMI_LCM_HEALTHY_CHECK
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_MES
+            bool "Enable CMI LCM healthy check"
+            default n
+            help
+                Enable MIPI healthy check, retry initial sequence once panel crashed.
+        config FIH_SW_DISPLAY_LCM_ID_CHECK
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_TAP
+            bool "Enable LCM id check"
+            default n
+            help
+                Enable LCM id check.
+        config FIH_SW_DISPLAY_AUO_LCM_HEALTHY_CHECK
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_MES
+            bool "Enable AUO LCM healthy check"
+            default n
+            help
+                Enable AUO LCM healthy check.
+#FIH-SW-MM-VH-DISPLAY-40*]
+        config FIH_SW_FWVGA_LOGO
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_JLO
+            bool "Sony FWVGA Logo"
+            default n
+            help
+                Select FWVGA Logo.
+        config FIH_SW_DISPLAY_DSI_BKL_EN
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_JLO
+            bool "DSI_BKL_EN"
+            default n
+            help
+                DSI_BKL_EN
+        config FIH_FB_MSM_DISPLAY_WORK_QUEUE
+            depends on FIH_SW_DISPLAY
+            bool "Enable Display Work Queue"
+            default n
+            help
+                Use work queue to decrease display resume time.
+        config FIH_SW_DISPLAY_LCM_DIMMING
+            depends on FIH_SW_DISPLAY
+            bool "Enable LCM DIMMING by set DD"
+            default n
+            help
+                Set DD of 0x53
+# FIH-SW-MM-VH-DISPLAY-21*]
+    endmenu
+    # --- FIH_PROJECT_MES}-------------------------------------------------- END
+    # --- FIH_PROJECT_JLO{-------------------------------------------------- START
+    # ***********************************************************    
+    # Project configurations for FIH_PROJECT_JLO
+    # ***********************************************************
+    menu "Configurations for FIH_PROJECT_JLO"
+        depends on FIH_PROJECT_JLO
+        config FIH_FTM
+            bool "FIH_FTM"
+            default n
+            help
+                Enable/Disable the build flag FIH_FTM.
+
+        config FIH_MACH_TAMSUI_JLO
+            bool "FIH_MACH_TAMSUI_JLO"
+            depends on FIH_PROJECT_JLO
+            default y
+            help
+                Enable/Disable the build flag FIH_MACH_TAMSUI_JLO.
+
+        config FIH_SEMC_S1
+            bool "FIH_SEMC_S1"
+            depends on FIH_PROJECT_JLO
+            default n
+            help
+                Enable/Disable SEMC S1 boot for JLO.
+
+        menuconfig FIH_TOUCHSCREEN
+            bool "FIH TouchScreen"
+            depends on FIH_CONFIG_GROUP
+            default y
+            help
+                Select if the touch panel is attached.
+
+        if FIH_TOUCHSCREEN
+        menuconfig FIH_TOUCHSCREEN_SYNAPTICS_T1320
+            bool "Synaptics T1320 Touchscreen"
+            depends on I2C && FIH_TOUCHSCREEN
+            default n
+            help
+                Select if the Synaptics T1320 touch panel is attached.
+
+        if FIH_TOUCHSCREEN_SYNAPTICS_T1320
+        config FIH_TOUCHSCREEN_SYNAPTICS_T1320_UPGRADE
+            bool "Synaptics T1320 Touchscreen Upgrade Enable"
+            depends on I2C && FIH_TOUCHSCREEN_SYNAPTICS_T1320
+            default n
+            help
+                Select if the Synaptics T1320 touch panel upgrade FW needed.
+
+        config FIH_TOUCHSCREEN_SYNAPTICS_T1320_AUTOUPGRADE
+            bool "Synaptics T1320 Touchscreen AUTO-upgrade Enable"
+            depends on I2C && FIH_TOUCHSCREEN_SYNAPTICS_T1320_UPGRADE
+            default n
+            help
+                Select if the Synaptics T1320 touch panel AUTO upgrade FW needed.
+
+        endif
+        endif
+        
+        # FIH-SW3-PERIPHERAL-AH-Touch_Porting-00
+        if FIH_TOUCHSCREEN
+        config FIH_TOUCHSCREEN_CYTTSP_I2C_TMA340
+            bool "Cypress TTSP based touchscreens TMA340"
+            depends on I2C && FIH_TOUCHSCREEN
+            default y
+            help
+                Select if the Cypress TMA340 touch panel is attached.
+        endif
+
+
+        #FIH-SW3-KERNEL-VH-CHARGING-11*[
+        config FIH_SW3_BATTERY
+            bool "FIH battery driver"
+            default y
+            help
+                Enable FIH battery driver
+        config FIH_SW3_BQ275X0_ROMMODE
+            bool "Enable BQ275x0 programming driver"
+            depends on FIH_SW3_BATTERY
+            default y
+            help
+                  Enable bq275x0 programming driver.
+              
+        config FIH_SW3_BQ275X0_ROMMODE_AUTO_UPGRADE
+            bool "Enable DFI/FW auto upgrade"
+            depends on FIH_SW3_BQ275X0_ROMMODE
+            default y
+            help
+                  Enable auto upgrade while driver probe.
+        
+        config FIH_SW3_POWER_OFF_CHARGING
+            bool "Enable power off charging mode"
+            depends on FIH_SW3_BATTERY
+            default y
+            help
+                Enable power off charging mode.
+                
+        # FIH-SW3-KERNEL-EL-GAUGE_DISABLE_SLEEP_PLUS-00+[
+        config FIH_GAUGE_DISABLE_SLEEP_PLUS
+            bool "DISABLE GAUGE SLEEP PLUS"
+            depends on FIH_SW3_BATTERY
+            default n
+            help
+                Disable gauge sleep plus function
+        # FIH-SW3-KERNEL-EL-GAUGE_DISABLE_SLEEP_PLUS-00+]
+                
+        #FIH-SW3-KERNEL-VH-CHARGING-21*[
+        config FIH_SW1_FEATURE_BATTERY_THERMAL_VIA_PMIC
+            bool "Enable get battery thermal from PMIC. "
+            depends on FIH_SW3_BATTERY
+            default n
+            help
+                Enable the patch which get battery temperature from PMIC.
+        #FIH-SW3-KERNEL-VH-CHARGING-21*]
+        #FIH-SW3-KERNEL-VH-CHARGING-11*]
+        
+        
+        # FIH-SW3-KERNEL-EL-add_last_alog-00+[
+        config FEATURE_FIH_SW3_LAST_ALOG
+            bool "RAM console for last alog"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable RAM console for last alog
+        # FIH-SW3-KERNEL-EL-add_flag_for_battery_power_on_reason+[
+        config FIH_SW3_POWER_ON_REASON
+            bool "turn on the power on reason detection for battery driver"
+            default n
+            help
+                turn on the power on reason detection for battery driver
+        # FIH-SW3-KERNEL-EL-add_flag_for_battery_power_on_reason+]  
+        # FIH-SW3-KERNEL-EL-add_last_alog-00+]
+        # FIH-SW3-KERNEL-EL-dynamically_disable_UART-00+[
+
+        config FEATURE_FIH_SW3_BUILDTYPE_DEBUG
+            bool "enable debug mode for printk"
+            default n
+            help
+                if build debug, printk will not lost log when resume
+
+        config FEATURE_FIH_SW3_REMOVE_SERIAL_DYNAMICALLY
+            bool "turn off serial port dynamically"
+            default n
+            help
+                turn off serial port dynamically
+
+        # FIH-SW3-KERNEL-EL-dynamically_disable_UART-00+]
+
+        # FIH-SW2-PERIPHERAL-FG-SENSOR-00*[
+        config FIH_SENSOR
+            bool "FIH Sensors"
+            depends on FIH_CONFIG_GROUP
+            default y
+            help
+                Say Y here if you want to support FIH senosrs.
+
+        config FIH_MSENSOR_AKM8975
+            bool "Magnetic Field Sensor: AK8975B"
+            depends on I2C && FIH_SENSOR
+            default y
+            help
+                Say Y here if you want to support Asahi Kasei's
+                magnetic/orientation sensor AK8975.
+
+        config FIH_ASENSOR_BMA250
+            bool "Acceleration Sensor: BMA250"
+            depends on I2C && FIH_SENSOR
+            default y
+            help
+                Say Y here if you want to support Bosch Sensortec's
+                acceleration sensor BMA250.
+
+        config FIH_PSENSOR_QPDSS702
+            bool "Proximity Sensor: QPDS-S702"
+            depends on I2C && FIH_SENSOR
+            default y
+            help
+                Say Y here if you want to support AVAGO's
+                proximity sensor QPDS-S702.
+
+        # FIH-SW1-PERIPHERAL-AC-PSENSOR_SENSITIVITY-01+[
+        config PROXIMITY_SENSOR_CALIBRATON_REPLACE
+            bool "Proximity Sensor calibration replace"
+            depends on FIH_PSENSOR_QPDSS702
+            default n
+            help
+                Support for proximity sensor calibration data replace from nv
+        # FIH-SW1-PERIPHERAL-AC-PSENSOR_SENSITIVITY-01+]
+        # FIH-SW2-PERIPHERAL-FG-SENSOR-00*]
+
+        #SW2D2-MM-MC-Camera-BringUpL03561LedDriverIC-00+[
+        config FIH_CAMERA
+            bool "Enable Camera for FIH project"
+            depends on MSM_CAMERA
+            default y
+            ---help---
+              Enable Camera for FIH project
+              
+        config ISX006
+            bool "Sensor isx006 (SOC 5M)"
+            depends on FIH_CAMERA 
+            default n
+            ---help---
+              Sony 5M SOC Sensor 
+              
+        config CAMERA_FLASH_LM3561
+            bool "Lm3561 flash driver IC of LED"
+            depends on FIH_CAMERA && ISX006
+            default n
+            ---help---
+              Led flash driver IC for Camera             
+        #SW2D2-MM-MC-Camera-BringUpL03561LedDriverIC-00+]          
+        #SW2D2-MM-MC-Camera-BringUpMt9v115Sensor-00+[
+        config MT9V115
+            bool "Sensor mt9v115 (SOC VGA)"
+            depends on FIH_CAMERA 
+            default n
+            ---help---
+              Aptina VGA SOC Sensor 
+        #SW2D2-MM-MC-Camera-BringUpMt9v115Sensor-00+]
+
+        config FIH_BRIGHTNESS
+            bool "Support camera brightness setting"
+            default y
+            help
+                Enable camera brightness setting.     
+                 
+        config FIH_WB
+            bool "Support camera white balance setting"
+            default y
+            help
+                Enable camera white balance setting.                     
+        config FIH_METRY
+            bool "Support camera AE metry setting"
+            default y
+            help
+                Enable camera AE metry setting.     
+                           
+        config FIH_SCENE
+            bool "Support camera scene mode setting"
+            default y
+            help
+                Enable camera scene mode setting.
+    
+        # /*FIH-SW3-KERNEL-JC-Porting-01+[ */
+        config FIH_SUSPEND_RESUME_LOG
+            bool "FIH LOG about SUSPEND/RESUME"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable suspend and resume log support
+        
+        config FIH_MODEM_SUSPEND_LOG
+            bool "FIH MODEM SUSPEND LOG"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable to show the suspend log at modem of last suspend event.
+
+        config FIH_DUMP_WAKELOCK
+            bool "FIH DUMP WAKELOCK"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable to dump wakelock if it active.  
+        
+        config FIH_DISABLE_SUSPEND
+            bool "FIH DISABLE SUSPEND"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Disable suspend by wakelock.
+        # /*FIH-SW3-KERNEL-JC-Porting-01+] */ 
+
+        #FIH-KERNEL-SC-Suspend_Hang_Timer-00+[
+        config FIH_SUSPEND_HANG_TIMER
+            bool "FIH SUSPEND HANG TIMER"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable to dump suspend information while suspend hang.
+        #FIH-KERNEL-SC-Suspend_Hang_Timer-00+]
+    
+        #FIH-KERNEL-SC-sleep-func-00+[
+        config FIH_HR_MSLEEP
+            bool "FIH_HR_MSLEEP"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Provide more efficient sleep function.
+        #FIH-KERNEL-SC-sleep-func-00+]
+
+        # FIH-SW1-KERNEL-HC-Modem_Crash_Log-00+[
+        config FIH_MODEM_CRASH_LOG
+            bool "FIH MODEM CRASH LOG"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable modem crash log if it active. 
+        # FIH-SW1-KERNEL-HC-Modem_Crash_Log-00+]
+        
+        # FIH-SW3-KERNEL-PK-INPUT_SAMPLING_DOWN_FACTOR-00+[
+        config FIH_INCREASE_CPU_FREQ_WHEN_INPUT_EVENT
+            bool "FIH INCREASE CPU FREQ WHEN INPUT EVENT"
+            depends on FIH_CONFIG_GROUP
+            default n
+            help
+                Enable this feauture to adjust cpufreq settings.
+        # FIH-SW3-KERNEL-PK-INPUT_SAMPLING_DOWN_FACTOR-00+]  
+        
+        # MTD-Conn-JC-BTSleep-00+[
+        config BROADCOM_BCM4330_BTFM
+            tristate "Broadcom BCM4330 is used"
+            default y
+            depends on FIH_CONFIG_GROUP
+            help
+                If you say yes here you get support for broadcom BCM4330.
+
+        config BROADCOM_BCM4330_BTFM_SLEEP
+            tristate "Enable Broadcom BCM4330 Sleep mode"
+            default y
+            depends on FIH_CONFIG_GROUP && BROADCOM_BCM4330_BTFM
+            help
+                If you say yes here you get support for broadcom BCM4330 Sleep mode.
+        # MTD-Conn-JC-BTSleep-00+] 
+
+        # FIH-SW3-CONN-MW-USB_Charging-00+[
+        config FIH_USB_CHARGING_WHEN_CONNECT_TO_PC_WHICH_UNDER_STANDBY_MODE
+            bool "USB CHARGING WHEN CONNECT TO PC WHICH UNDER STANDBY MODE"
+            default y
+            help
+                Select if you want CHARGING_WHEN_CONNECT_TO_PC_WHICH_UNDER_STANDBY_MODE.
+        # FIH-SW3-CONN-MW-USB_Charging-00+]
+        # FIH-SW-MM-VH-DISPLAY-21*[
+        config FIH_SW_DISPLAY
+            bool "FIH display driver"
+            default n
+            help
+                FIH display driver.
+        config FIH_FB_MSM_POWER_OFF_CHARGING_ANIMATION
+            depends on FIH_SW_DISPLAY
+            bool "Support for power off charging animation"
+            default n
+            help
+	            Enable show power off charging pictures.
+        config FIH_SW_TCXO_SD_DURING_DISPLAY_ON
+            depends on FIH_SW_DISPLAY
+            bool "Make SOC TCXO shutdown while screen on"
+            default n
+            help
+                Make SOC TCXO shutdown while screen on.
+        config FIH_SW_DISPLAY_BACKLIGHT_CMD_QUEUE
+            depends on FIH_SW_DISPLAY
+            bool "Enable backlight command queue"
+            default n
+            help
+                Queuing backlight commands before pan display, and send after pan display.
+        config FIH_SW_DISPLAY_CABC
+            depends on FIH_SW_DISPLAY
+            bool "Enable CABC"
+            default n
+            help
+                Enable content adaptive backlight control of display.
+        config FIH_SW_DISPLAY_CABC_TOOLBOX
+            depends on FIH_SW_DISPLAY_CABC
+            bool "Enable CABC TOOLBOX"
+            default n
+            help
+                Enable CABC toolbox
+#FIH-SW-MM-VH-DISPLAY-40*[
+        config FIH_SW_DISPLAY_CMI_LCM_HEALTHY_CHECK
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_MES
+            bool "Enable CMI LCM healthy check"
+            default n
+            help
+                Enable MIPI healthy check, retry initial sequence once panel crashed.
+        config FIH_SW_DISPLAY_LCM_ID_CHECK
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_TAP
+            bool "Enable LCM id check"
+            default n
+            help
+                Enable LCM id check.
+        config FIH_SW_DISPLAY_AUO_LCM_HEALTHY_CHECK
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_MES
+            bool "Enable AUO LCM healthy check"
+            default n
+            help
+                Enable AUO LCM healthy check.
+#FIH-SW-MM-VH-DISPLAY-40*]
+        config FIH_SW_FWVGA_LOGO
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_JLO
+            bool "Sony FWVGA Logo"
+            default n
+            help
+                Select FWVGA Logo.
+        config FIH_SW_DISPLAY_DSI_BKL_EN
+            depends on FIH_SW_DISPLAY && FIH_PROJECT_JLO
+            bool "DSI_BKL_EN"
+            default n
+            help
+                DSI_BKL_EN
+        config FIH_FB_MSM_DISPLAY_WORK_QUEUE
+            depends on FIH_SW_DISPLAY
+            bool "Enable Display Work Queue"
+            default n
+            help
+                Use work queue to decrease display resume time.
+        config FIH_SW_DISPLAY_LCM_DIMMING
+            depends on FIH_SW_DISPLAY
+            bool "Enable LCM DIMMING by set DD"
+            default n
+            help
+                Set DD of 0x53
+# FIH-SW-MM-VH-DISPLAY-21*]
+# MM-VH-DISPLAY-JB04+[
+        config FIH_UI_KPI_METER
+            depends on FIH_SW_DISPLAY
+            bool "Enable FIH UI KPI METER"
+            default n
+            help
+                Enable FIH UI KPI METER
+# MM-VH-DISPLAY-JB04+]
+    endmenu
+    # --- FIH_PROJECT_JLO}-------------------------------------------------- END
+endif
